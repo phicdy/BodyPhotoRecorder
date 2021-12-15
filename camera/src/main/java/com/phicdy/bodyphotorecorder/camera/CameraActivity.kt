@@ -16,7 +16,7 @@ class CameraActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            CameraScrren()
+            CameraScreen()
         }
     }
 
@@ -31,7 +31,7 @@ class CameraActivity : ComponentActivity() {
 }
 
 @Composable
-fun CameraScrren() {
+fun CameraScreen() {
     CameraPreview()
 }
 
@@ -56,5 +56,5 @@ fun ShutterButton() {
 @Preview
 @Composable
 fun CamereScreenPreivew() {
-    CameraScrren()
+    CameraScreen()
 }
