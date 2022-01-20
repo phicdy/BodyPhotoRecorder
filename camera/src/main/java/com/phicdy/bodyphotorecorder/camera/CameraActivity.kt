@@ -7,6 +7,8 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.camera.core.CameraSelector
+import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.Button
@@ -21,6 +23,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import java.io.File
@@ -88,9 +91,31 @@ fun CameraScreen() {
 
 @Composable
 fun CameraPreview() {
+    val lifecycleOwner = LocalLifecycleOwner.current
     AndroidView(
         factory = { context ->
             val previewView = PreviewView(context)
+            val cameraProviderFuture = ProcessCameraProvider.getInstance(context)
+            cameraProviderFuture.addListener({
+                val cameraProvider = cameraProviderFuture.get()
+
+                val preview = androidx.camera.core.Preview.Builder()
+                    .build()
+                preview.setSurfaceProvider(previewView.surfaceProvider)
+
+                val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
+                try {
+                    cameraProvider.unbindAll()
+                    cameraProvider.bindToLifecycle(
+                        lifecycleOwner,
+                        cameraSelector,
+                        preview
+                    )
+                } catch (e: Exception) {
+
+                }
+
+            }, ContextCompat.getMainExecutor(context))
             previewView
         },
         modifier = Modifier.fillMaxSize()
@@ -106,6 +131,6 @@ fun ShutterButton() {
 
 @Preview
 @Composable
-fun CamereScreenPreivew() {
+fun CameraScreenPreview() {
     CameraScreen()
 }
